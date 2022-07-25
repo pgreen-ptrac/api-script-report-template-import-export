@@ -1,3 +1,4 @@
+import os
 import requests
 import json
 
@@ -34,7 +35,7 @@ def prompt_user_options(msg, retry_msg="", options=[]):
 # prompts users for an input. checks the entered input is in a valid range. returns a valid choice
 def prompt_user_list(msg, retry_msg="", range=0):
     #setup
-    str_options = "0-" + range
+    str_options = "0-" + str(range)
     
     #get input
     entered = input(prompt_prefix + msg + " (" + str_options + "): ")
@@ -68,11 +69,6 @@ def prompt_retry(msg):
         exit()
     else:
         return prompt_retry(msg)
-
-
-
-
-
 
 
 
@@ -128,19 +124,20 @@ def handle_cf_instance_url(base_url):
             return handle_instance_url()
 
 
-# gets the file path of the json to be imported
-def handle_input_path():
-    input_file_path = prompt_user('Enter relative path to the Json file you want to import into Plextrac (including file extention): ')
-    # if os.path.exists(input_file_path) == True:
-    return input_file_path
-    # else:
-    #     retry = None
-    #     while retry is None:
-    #         entered = input(f'Entered path: {input_file_path} is not a valid file. Try again (y/n): ')
-    #         if entered == 'y' or entered == 'n':
-    #             retry = entered
 
-    #     if retry == 'y':
-    #         return prompt_input_path()
-    #     else:
-    #         return
+# gets the file path of the json to be imported, checks if the file exists, and trys to load and return the data
+def handle_load_report_template_data():
+    json_file_path = prompt_user('Enter relative path to the Json file you want to import into Plextrac (including file extention): ')
+
+    if not os.path.exists(json_file_path):
+        if prompt_retry(f'Specified JSON file at \'{json_file_path}\' does not exist.'):
+            return handle_load_report_template_data()
+    
+    try:
+        with open(json_file_path, 'r', encoding="utf8") as file:
+            json_data = json.load(file)
+    except Exception as e:
+        if prompt_retry(f'Error loading file: {e}'):
+            return handle_load_report_template_data()
+    
+    return json_data
