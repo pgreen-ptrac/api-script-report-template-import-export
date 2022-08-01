@@ -1,0 +1,1 @@
+{"template_name": "Green Testing Report Template", "export_template": "default", "custom_fields": [{"label": "sectoin", "text": "<p>description</p>"}], "report_custom_fields": [{"label": "field", "value": "value"}]}
